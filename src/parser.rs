@@ -106,20 +106,18 @@ impl<S: Read + Seek> Parser<S> {
                     }
                 }
             }
-            _ => Err(Error::UnexpectedEndOfLoop),
+            ']' => Err(Error::UnexpectedEndOfLoop),
+            _ => unreachable!(),
         }
     }
 
     fn skip(&mut self) -> Result<()> {
-        loop {
-            match self.next_char()? {
-                Some(c) if !CHARS.contains(&c)=> continue,
-                Some(_) => {
-                    self.stream.seek(SeekFrom::Current(-1))?;
-                    break Ok(());
-                }
-                None => break Ok(()),
+        while let Some(c) = self.next_char()? {
+            if CHARS.contains(&c) {
+                self.stream.seek(SeekFrom::Current(-1))?;
+                break;
             }
         }
+        Ok(())
     }
 }

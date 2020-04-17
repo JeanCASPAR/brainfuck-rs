@@ -59,9 +59,14 @@ impl Interpreter {
         }
     }
 
-    #[inline]
-    fn get_index(&self) -> usize {
-        (self.ptr.rem_euclid(self.memory.len() as isize)) as usize
+    fn get_index(&mut self) -> usize {
+        while self.ptr < 0 {
+            self.ptr += self.memory.len() as isize;
+        }
+        while self.ptr > self.memory.len() as isize {
+            self.ptr -= self.memory.len() as isize;
+        }
+        self.ptr as usize
     }
 }
 
