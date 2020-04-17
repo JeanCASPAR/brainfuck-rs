@@ -5,7 +5,7 @@ pub mod parser;
 use std::path::Path;
 
 fn main() {
-    let path = Path::new("./hello_world");
+    let path = Path::new("./examples/hello_world.bf");
     let parser = parser::Parser::from_path(path).unwrap();
     let instructions = parser.parse().unwrap();
     let mut interpreter = interpreter::Interpreter::new(instructions);

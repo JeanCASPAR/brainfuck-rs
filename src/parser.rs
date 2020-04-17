@@ -106,7 +106,7 @@ impl<S: Read + Seek> Parser<S> {
                     }
                 }
             }
-            c => Err(Error::(UnexpectedEndOfLoop)),
+            _ => Err(Error::UnexpectedEndOfLoop),
         }
     }
 
