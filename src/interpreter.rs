@@ -1,11 +1,12 @@
 use std::collections::VecDeque;
 use std::io::{stdin, Read};
+use std::num::Wrapping;
 
 use crate::parser::Instruction;
 
 pub struct Interpreter {
     instructions: VecDeque<Instruction>,
-    memory: Vec<u8>,
+    memory: Vec<Wrapping<u8>>,
     ptr: isize,
 }
 
@@ -13,7 +14,7 @@ impl Interpreter {
     pub fn new(instructions: VecDeque<Instruction>) -> Self {
         Self {
             instructions,
-            memory: vec![0; 30_000],
+            memory: vec![Wrapping(0); 30_000],
             ptr: 0,
         }
     }
@@ -30,26 +31,28 @@ impl Interpreter {
             Instruction::DecrementPtr => self.ptr -= 1,
             Instruction::IncrementValue => {
                 let index = self.get_index();
-                self.memory[index] = self.memory[index].wrapping_add(1);
+                self.memory[index] += Wrapping(1);
             }
             Instruction::DecrementValue => {
                 let index = self.get_index();
-                self.memory[index] = self.memory[index].wrapping_sub(1);
+                self.memory[index] -= Wrapping(1);
             }
             Instruction::Output => {
                 let index = self.get_index();
-                print!("{}", self.memory[index] as char);
+                print!("{}", self.memory[index].0 as char);
             }
             Instruction::Input => {
-                let index = self.get_index();
+                let mut buffer = vec![0];
                 stdin()
-                    .read_exact(&mut self.memory[index..index + 1])
+                    .read_exact(&mut buffer)
                     .unwrap();
+                let index = self.get_index();
+                self.memory[index] = Wrapping(buffer[0]);
             }
             Instruction::Loop(instructions) => {
                 while {
                     let index = self.get_index();
-                    self.memory[index] != 0
+                    self.memory[index].0 != 0
                 } {
                     for instruction in instructions.iter() {
                         self.execute_instruction(instruction);
