@@ -9,7 +9,7 @@ const CHARS: [char; 8] = ['>', '<', '+', '-', '.', ',', '[', ']'];
 pub enum Error {
     Io(IoError),
     UnexpectedEof,
-    UnexpectedChar(char),
+    UnexpectedEndOfLoop,
 }
 
 impl From<IoError> for Error {
@@ -106,7 +106,7 @@ impl<S: Read + Seek> Parser<S> {
                     }
                 }
             }
-            c => Err(Error::UnexpectedChar(c)),
+            c => Err(Error::(UnexpectedEndOfLoop)),
         }
     }
 
